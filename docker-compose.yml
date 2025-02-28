@@ -1,9 +1,9 @@
 version: '3.4'
 
 services:
-  new-api:
+  newone-api-service:
     image: calciumion/new-api:latest
-    container_name: new-api-one
+    container_name: newone-api-service
     restart: always
     command: --log-dir /app/logs
     ports:
@@ -12,8 +12,8 @@ services:
       - ./data:/data
       - ./logs:/app/logs
     environment:
-      - SQL_DSN=root:4556Dke@tcp(new-mysql:3306)/new-api  # Point to the new mysql service
-      - REDIS_CONN_STRING=redis://new-redis
+      - SQL_DSN=root:123456@tcp(newone-api-mysql:3306)/new-api  # Point to the new MySQL service
+      - REDIS_CONN_STRING=redis://newone-api-redis
       - TZ=Asia/Shanghai
     #      - SESSION_SECRET=random_string  # 多机部署时设置，必须修改这个随机字符串！！！！！！！
     #      - NODE_TYPE=slave  # Uncomment for slave node in multi-node deployment
@@ -21,25 +21,25 @@ services:
     #      - FRONTEND_BASE_URL=https://openai.justsong.cn  # Uncomment for multi-node deployment with front-end URL
 
     depends_on:
-      - new-redis
-      - new-mysql
+      - newone-api-redis
+      - newone-api-mysql
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://localhost:3003/api/status | grep -o '\"success\":\\s*true' | awk -F: '{print $2}'"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  new-redis:
+  newone-api-redis:
     image: redis:latest
-    container_name: new-redis
+    container_name: newone-api-redis
     restart: always
 
-  new-mysql:
+  newone-api-mysql:
     image: mysql:8.2
-    container_name: new-mysql
+    container_name: newone-api-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 4556Dke  # Ensure this matches the password in SQL_DSN
+      MYSQL_ROOT_PASSWORD: 123456  # Ensure this matches the password in SQL_DSN
       MYSQL_DATABASE: new-api
     volumes:
       - mysql_data:/var/lib/mysql
